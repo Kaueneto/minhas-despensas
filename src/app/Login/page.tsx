@@ -45,6 +45,14 @@ export default function LoginPage() {
         return
       }
 
+      // Verificar se há convite pendente
+      const pendingConvite = sessionStorage.getItem('pendingConvite')
+      if (pendingConvite) {
+        sessionStorage.removeItem('pendingConvite')
+        router.push(`/convite/${pendingConvite}`)
+        return
+      }
+
       router.push('/despensas')
     } catch {
       setError('Ocorreu um erro ao fazer login. Tente novamente.')
