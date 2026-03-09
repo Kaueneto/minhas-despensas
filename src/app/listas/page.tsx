@@ -3,27 +3,23 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
-import { getDespensas, deleteDespensa } from '../../services/despensas'
+import { getListas, deleteLista } from '../../services/listas'
+import type { ListaCompras } from '../../types'
 import { signOut } from '../../services/auth'
-import NewDespensaModal from '../../components/NewDespensaModal'
+import NewListaModal from '../../components/NewListaModal'
 import BottomNav from '../../components/BottomNav'
-import type { DespensaComDetalhes } from '../../types'
 
-type FilterType = 'todas' | 'vazias'
-
-export default function DespensasPage() {
+export default function ListasPage() {
   const router = useRouter()
-  const [filter, setFilter] = useState<FilterType>('todas')
-  const [despensas, setDespensas] = useState<DespensaComDetalhes[]>([])
+  const [listas, setListas] = useState<ListaCompras[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [user, setUser] = useState<{ email?: string; nome?: string } | null>(null)
   const [isSelectionMode, setIsSelectionMode] = useState(false)
-  const [selectedDespensas, setSelectedDespensas] = useState<string[]>([])
+  const [selectedListas, setSelectedListas] = useState<string[]>([])
   const [isDeleting, setIsDeleting] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
 
-  // verificar autenticação e buscar dados
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession()
@@ -33,7 +29,6 @@ export default function DespensasPage() {
         return
       }
 
-      // buscar dados do usuário na tabela users
       const { data: userData } = await supabase
         .from('users')
         .select('nome, email')
@@ -45,16 +40,16 @@ export default function DespensasPage() {
         nome: userData?.nome || session.user.user_metadata?.full_name
       })
 
-      await loadDespensas()
+      await loadListas()
     }
 
     checkAuth()
   }, [router])
 
-  const loadDespensas = async () => {
+  const loadListas = async () => {
     setIsLoading(true)
-    const data = await getDespensas()
-    setDespensas(data)
+    const data = await getListas()
+    setListas(data)
     setIsLoading(false)
   }
 
@@ -64,51 +59,42 @@ export default function DespensasPage() {
   }
 
   const handleDeleteSelected = async () => {
-    if (selectedDespensas.length === 0) return
+    if (selectedListas.length === 0) return
     
     setIsDeleting(true)
     
-    // deletar todas as despensas selecionadas
-    for (const id of selectedDespensas) {
-      await deleteDespensa(id)
+    for (const id of selectedListas) {
+      await deleteLista(id)
     }
     
-    // att a lista removendo as deletadas
-    setDespensas(despensas.filter(d => !selectedDespensas.includes(d.id)))
+    setListas(listas.filter(l => !selectedListas.includes(l.id)))
     
     setIsDeleting(false)
-    setSelectedDespensas([])
+    setSelectedListas([])
     setIsSelectionMode(false)
   }
 
-  const toggleSelectDespensa = (id: string) => {
-    setSelectedDespensas(prev => 
+  const toggleSelectLista = (id: string) => {
+    setSelectedListas(prev => 
       prev.includes(id) 
-        ? prev.filter(despensaId => despensaId !== id)
+        ? prev.filter(listaId => listaId !== id)
         : [...prev, id]
     )
   }
 
   const handleSelectAll = () => {
-    if (selectedDespensas.length === filteredDespensas.length) {
-      setSelectedDespensas([])
+    if (selectedListas.length === listas.length) {
+      setSelectedListas([])
     } else {
-      setSelectedDespensas(filteredDespensas.map(d => d.id))
+      setSelectedListas(listas.map(l => l.id))
     }
   }
 
   const exitSelectionMode = () => {
     setIsSelectionMode(false)
-    setSelectedDespensas([])
+    setSelectedListas([])
   }
 
-  // filtrar as  despensas do usuario
-  const filteredDespensas = despensas.filter(d => {
-    if (filter === 'vazias') return d.total_itens === 0
-    return true
-  })
-
-  // gerar iniciais do avatar
   const getInitials = () => {
     const name = user?.nome || user?.email || ''
     if (!name) return '?'
@@ -121,20 +107,19 @@ export default function DespensasPage() {
       return parts[0].substring(0, 2).toUpperCase()
     }
     
-    // se não tem nome, usar email no avatarr
     const emailPart = name.split('@')[0]
     return emailPart.substring(0, 2).toUpperCase()
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 pb-24">
-      {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-24">
+      {/* header */}
       <header className="bg-white/80 backdrop-blur-sm sticky top-0 z-10 px-4 py-3">
         <div className="flex items-center justify-between">
-          <h1 className="text-lg font-semibold text-gray-900">Despensas</h1>
+          <h1 className="text-lg font-semibold text-gray-900">Listas de Compras</h1>
           
           <div className="flex items-center gap-3">
-            {/* menu de opçoes */}
+            {/* menu de opções */}
             <div className="relative">
               <button
                 onClick={() => setShowMenu(!showMenu)}
@@ -148,22 +133,21 @@ export default function DespensasPage() {
                 </svg>
               </button>
 
-              {/* dropdown menu */}
               {showMenu && (
                 <>
                   <div 
                     className="fixed inset-0 z-40" 
                     onClick={() => setShowMenu(false)}
                   />
-                  <div className="absolute top-12 right-0 z-50 bg-white rounded-xl shadow-xl border border-gray-100 py-1 min-w-45 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="absolute top-12 right-0 z-50 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 min-w-[180px] animate-in fade-in zoom-in-95 duration-150">
                     <button
                       onClick={() => {
                         setIsSelectionMode(true)
                         setShowMenu(false)
                       }}
-                      className="w-full px-4 py-2.5 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                      className="w-full px-4 py-3 text-left text-gray-800 hover:bg-gray-50 transition-colors text-sm"
                     >
-                      Excluir Despensas
+                      Selecionar listas
                     </button>
                   </div>
                 </>
@@ -173,7 +157,7 @@ export default function DespensasPage() {
             {/* avatar */}
             <button
               onClick={handleLogout}
-              className="w-10 h-10 rounded-full bg-linear-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold text-sm shadow-md"
+              className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold text-sm shadow-md"
               title="Sair"
             >
               {getInitials()}
@@ -184,32 +168,32 @@ export default function DespensasPage() {
 
       {/* barra de seleção */}
       {isSelectionMode && (
-        <div className="bg-blue-500 text-white px-3 py-2.5 sticky top-15 z-10 shadow-md">
+        <div className="bg-blue-500 text-white px-3 py-2.5 sticky top-[60px] z-10 shadow-md">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
               <button
                 onClick={exitSelectionMode}
-                className="p-1 hover:bg-blue-600 rounded-lg transition-colors shrink-0"
+                className="p-1 hover:bg-blue-600 rounded-lg transition-colors flex-shrink-0"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
               <span className="font-medium text-sm truncate">
-                {selectedDespensas.length > 0 
-                  ? `${selectedDespensas.length} item${selectedDespensas.length > 1 ? 's' : ''}`
+                {selectedListas.length > 0 
+                  ? `${selectedListas.length} item${selectedListas.length > 1 ? 's' : ''}`
                   : 'Selecione'}
               </span>
             </div>
             
-            <div className="flex items-center gap-1.5 shrink-0">
-              {filteredDespensas.length > 0 && (
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              {listas.length > 0 && (
                 <button
                   onClick={handleSelectAll}
                   className="p-2 hover:bg-blue-600 rounded-full transition-colors"
-                  title={selectedDespensas.length === filteredDespensas.length ? 'Desmarcar todas' : 'Selecionar todas'}
+                  title={selectedListas.length === listas.length ? 'Desmarcar todas' : 'Selecionar todas'}
                 >
-                  {selectedDespensas.length === filteredDespensas.length ? (
+                  {selectedListas.length === listas.length ? (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -221,7 +205,7 @@ export default function DespensasPage() {
                 </button>
               )}
               
-              {selectedDespensas.length > 0 && (
+              {selectedListas.length > 0 && (
                 <button
                   onClick={handleDeleteSelected}
                   disabled={isDeleting}
@@ -247,31 +231,6 @@ export default function DespensasPage() {
 
       {/* conteudo */}
       <main className="px-4 py-4">
-        {/* filtros */}
-        <div className="flex gap-2 mb-4">
-          <button
-            onClick={() => setFilter('todas')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              filter === 'todas'
-                ? 'bg-blue-300 text-white border-blue-800'
-                : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-            }`}
-          >
-            Todas
-          </button>
-          <button
-            onClick={() => setFilter('vazias')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              filter === 'vazias'
-                ? 'bg-blue-300 text-white border-blue-800'
-                : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-            }`}
-          >
-            Vazias
-          </button>
-        </div>
-
-        {/* suas despensas */}
         {isLoading ? (
           <div className="flex justify-center py-12">
             <svg className="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -279,25 +238,21 @@ export default function DespensasPage() {
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
           </div>
-        ) : filteredDespensas.length === 0 ? (
+        ) : listas.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500">
-              {filter === 'vazias' 
-                ? 'Nenhuma despensa vazia' 
-                : 'Você ainda não tem despensas'}
-            </p>
+            <p className="text-gray-500">Você ainda não tem listas</p>
             <p className="text-gray-400 text-sm mt-1">
-              Clique em &quot;Nova despensa&quot; para criar
+              Clique em &quot;Nova lista&quot; para criar
             </p>
           </div>
         ) : (
           <div className="space-y-3">
-            {filteredDespensas.map((despensa) => {
-              const isSelected = selectedDespensas.includes(despensa.id)
+            {listas.map((lista) => {
+              const isSelected = selectedListas.includes(lista.id)
               
               return (
                 <div
-                  key={despensa.id}
+                  key={lista.id}
                   className={`relative bg-white rounded-xl p-4 shadow-sm border transition-all ${
                     isSelected 
                       ? 'border-blue-500 ring-2 ring-blue-200' 
@@ -305,13 +260,11 @@ export default function DespensasPage() {
                   }`}
                 >
                   {isSelectionMode ? (
-                    // modo de seleção
                     <div 
                       className="flex items-start gap-3 cursor-pointer"
-                      onClick={() => toggleSelectDespensa(despensa.id)}
+                      onClick={() => toggleSelectLista(lista.id)}
                     >
-                      {/* checkbox */}
-                      <div className="shrink-0 mt-1">
+                      <div className="flex-shrink-0 mt-1">
                         <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
                           isSelected 
                             ? 'bg-blue-500 border-blue-500' 
@@ -325,55 +278,35 @@ export default function DespensasPage() {
                         </div>
                       </div>
                       
-                      {/* Conteúdo */}
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-900 mb-2">
-                          {despensa.nome}
-                        </h3>
-                        
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {(despensa.total_membros || 0) > 0 && (
-                            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
-                              {despensa.total_membros} {despensa.total_membros === 1 ? 'Membro' : 'Membros'}
-                            </span>
-                          )}
+                          {lista.nome}
+                          </h3>
                           
-                          {despensa.total_itens > 0 ? (
-                            <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
-                              {despensa.total_itens} {despensa.total_itens === 1 ? 'item' : 'itens'}
-                            </span>
-                          ) : (
-                            <span className="text-gray-400 text-sm">
-                              Nenhum item
-                            </span>
-                          )}
-                        </div>
-                      </div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
+                            {lista.total_itens} {lista.total_itens === 1 ? 'item' : 'itens'}
+                          </span>
+                                </div>
+                            </div>
                     </div>
                   ) : (
-                    // modo normal 
                     <div 
                       className="cursor-pointer"
-                      onClick={() => router.push(`/despensas/${despensa.id}`)}
+                      onClick={() => router.push(`/listas/${lista.id}`)}
                     >
                       <h3 className="font-semibold text-gray-900 mb-2">
-                        {despensa.nome}
+                        {lista.nome}
                       </h3>
                       
                       <div className="flex items-center gap-2 flex-wrap">
-                        {(despensa.total_membros || 0) > 0 && (
-                          <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
-                            {despensa.total_membros} {despensa.total_membros === 1 ? 'Membro' : 'Membros'}
-                          </span>
-                        )}
+                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
+                          {lista.total_itens} {lista.total_itens === 1 ? 'item' : 'itens'}
+                        </span>
                         
-                        {despensa.total_itens > 0 ? (
-                          <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
-                            {despensa.total_itens} {despensa.total_itens === 1 ? 'item' : 'itens'}
-                          </span>
-                        ) : (
-                          <span className="text-gray-400 text-sm">
-                            Nenhum item
+                        {lista.observacoes && (
+                          <span className="text-gray-400 text-xs truncate max-w-[200px]">
+                            {lista.observacoes}
                           </span>
                         )}
                       </div>
@@ -386,25 +319,22 @@ export default function DespensasPage() {
         )}
       </main>
 
-      {/* adicionar nova despensa */}
+      {/* bt de nova lista */}
       <button
         onClick={() => setIsModalOpen(true)}
         className="fixed bottom-30 right-4 flex items-center gap-2 px-5 py-3 bg-white rounded-full shadow-lg border border-gray-200 text-gray-700 font-medium hover:shadow-xl transition-shadow z-40"
       >
-        Nova despensa
+        Nova lista
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
         </svg>
       </button>
 
-      {/* modal de nova despensa */}
-      <NewDespensaModal
+      <NewListaModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSuccess={loadDespensas}
       />
 
-      {/* botao navigation */}
       <BottomNav />
     </div>
   )

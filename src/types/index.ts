@@ -44,3 +44,22 @@ export interface User {
   nome?: string
   created_at?: string
 }
+
+export interface ListaCompras {
+  id: string
+  user_id: string
+  nome: string
+  total_itens: number
+  observacoes?: string
+  created_at: string
+}
+
+export interface ItemLista {
+  id: string
+  listacompras_id: string
+  is_checked: boolean
+  descricao: string
+  created_at: string
+  qtde: number
+  price: number | null
+}
