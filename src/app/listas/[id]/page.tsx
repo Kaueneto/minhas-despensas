@@ -240,7 +240,7 @@ export default function ListaDetalhesPage() {
 
   if (!lista) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 flex items-center justify-center">
         <svg className="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -250,7 +250,7 @@ export default function ListaDetalhesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-24">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 pb-24">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-sm sticky top-0 z-10 px-4 py-3">
         <div className="flex items-center gap-3">
@@ -289,7 +289,7 @@ export default function ListaDetalhesPage() {
                   className="fixed inset-0 z-40" 
                   onClick={() => setShowMenu(false)}
                 />
-                <div className="absolute top-12 right-0 z-50 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 min-w-[180px]">
+                <div className="absolute top-12 right-0 z-50 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 min-w-45">
                   <button
                     onClick={() => {
                       setIsSelectionMode(true)
@@ -407,7 +407,7 @@ export default function ListaDetalhesPage() {
             <div className="flex items-center gap-2 min-w-0">
               <button
                 onClick={exitSelectionMode}
-                className="p-1 hover:bg-blue-600 rounded-lg transition-colors flex-shrink-0"
+                className="p-1 hover:bg-blue-600 rounded-lg transition-colors shrink-0"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -420,7 +420,7 @@ export default function ListaDetalhesPage() {
               </span>
             </div>
             
-            <div className="flex items-center gap-1.5 flex-shrink-0">
+            <div className="flex items-center gap-1.5 shrink-0">
               {itens.length > 0 && (
                 <button
                   onClick={handleSelectAll}
@@ -559,7 +559,7 @@ export default function ListaDetalhesPage() {
                       className="flex items-start gap-3 cursor-pointer"
                       onClick={() => toggleSelectItem(item.id)}
                     >
-                      <div className="flex-shrink-0 mt-1">
+                      <div className="shrink-0 mt-1">
                         <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
                           isSelected 
                             ? 'bg-blue-500 border-blue-500' 
@@ -586,7 +586,7 @@ export default function ListaDetalhesPage() {
                         {/* Checkbox */}
                         <button
                           onClick={() => handleToggleCheck(item.id, !item.is_checked)}
-                          className="flex-shrink-0 mt-1"
+                          className="shrink-0 mt-1"
                         >
                           <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
                             item.is_checked 

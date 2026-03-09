@@ -112,7 +112,7 @@ export default function ListasPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-24">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 pb-24">
       {/* header */}
       <header className="bg-white/80 backdrop-blur-sm sticky top-0 z-10 px-4 py-3">
         <div className="flex items-center justify-between">
@@ -139,7 +139,7 @@ export default function ListasPage() {
                     className="fixed inset-0 z-40" 
                     onClick={() => setShowMenu(false)}
                   />
-                  <div className="absolute top-12 right-0 z-50 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 min-w-[180px] animate-in fade-in zoom-in-95 duration-150">
+                  <div className="absolute top-12 right-0 z-50 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 min-w-45 animate-in fade-in zoom-in-95 duration-150">
                     <button
                       onClick={() => {
                         setIsSelectionMode(true)
@@ -157,7 +157,7 @@ export default function ListasPage() {
             {/* avatar */}
             <button
               onClick={handleLogout}
-              className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold text-sm shadow-md"
+              className="w-10 h-10 rounded-full bg-linear-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold text-sm shadow-md"
               title="Sair"
             >
               {getInitials()}
@@ -168,12 +168,12 @@ export default function ListasPage() {
 
       {/* barra de seleção */}
       {isSelectionMode && (
-        <div className="bg-blue-500 text-white px-3 py-2.5 sticky top-[60px] z-10 shadow-md">
+        <div className="bg-blue-500 text-white px-3 py-2.5 sticky top-15 z-10 shadow-md">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
               <button
                 onClick={exitSelectionMode}
-                className="p-1 hover:bg-blue-600 rounded-lg transition-colors flex-shrink-0"
+                className="p-1 hover:bg-blue-600 rounded-lg transition-colors shrink-0"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -186,7 +186,7 @@ export default function ListasPage() {
               </span>
             </div>
             
-            <div className="flex items-center gap-1.5 flex-shrink-0">
+            <div className="flex items-center gap-1.5 shrink-0">
               {listas.length > 0 && (
                 <button
                   onClick={handleSelectAll}
@@ -264,7 +264,7 @@ export default function ListasPage() {
                       className="flex items-start gap-3 cursor-pointer"
                       onClick={() => toggleSelectLista(lista.id)}
                     >
-                      <div className="flex-shrink-0 mt-1">
+                      <div className="shrink-0 mt-1">
                         <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
                           isSelected 
                             ? 'bg-blue-500 border-blue-500' 
@@ -305,7 +305,7 @@ export default function ListasPage() {
                         </span>
                         
                         {lista.observacoes && (
-                          <span className="text-gray-400 text-xs truncate max-w-[200px]">
+                          <span className="text-gray-400 text-xs truncate max-w-50">
                             {lista.observacoes}
                           </span>
                         )}

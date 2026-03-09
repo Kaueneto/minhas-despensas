@@ -23,14 +23,14 @@ export default function BottomNav() {
         flex items-center justify-around
         px-2 py-3
         /* EFEITO CRISTAL: Transparência altíssima */
-        bg-white/[0.08] 
+        bg-white/8 
         backdrop-blur-[25px] 
         -webkit-backdrop-blur-[25px]
-        backdrop-saturate-[200%]
+        backdrop-saturate-200
         
         /* Borda 'fio de cabelo' para brilho lateral */
-        border border-white/[0.4]
-        rounded-[32px]
+        border border-white/40
+        rounded-4xl
         
         /* Sombra profunda para destacar o vidro do fundo */
         shadow-[0_12px_40px_rgba(0,0,0,0.12)]

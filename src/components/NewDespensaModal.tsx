@@ -140,7 +140,7 @@ export default function NewDespensaModal({ isOpen, onClose, onSuccess }: NewDesp
       />
 
       {/* modal */}
-      <div className="fixed inset-x-0 bottom-0 z-[60] animate-slide-up">
+      <div className="fixed inset-x-0 bottom-0 z-60 animate-slide-up">
         <div className="bg-white rounded-t-2xl shadow-xl max-h-[90vh] overflow-y-auto">
           {/* handle bar */}
           <div className="flex justify-center pt-3 pb-2">
@@ -166,7 +166,7 @@ export default function NewDespensaModal({ isOpen, onClose, onSuccess }: NewDesp
             {/* sucesso */}
             {successMessage && (
               <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm flex items-center gap-3">
-                <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
                 {successMessage}

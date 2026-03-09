@@ -47,12 +47,12 @@ export default function NewListaModal({ isOpen, onClose }: NewListaModalProps) {
     <>
       {/* overlay */}
       <div 
-        className="fixed inset-0 bg-black/50 z-[60] animate-in fade-in duration-200"
+        className="fixed inset-0 bg-black/50 z-60 animate-in fade-in duration-200"
         onClick={handleClose}
       />
       
       {/* modal */}
-      <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4">
+      <div className="fixed inset-0 z-60 flex items-end sm:items-center justify-center p-4">
         <div 
           className="bg-white rounded-t-3xl sm:rounded-3xl shadow-xl w-full max-w-md animate-in slide-in-from-bottom duration-300 sm:slide-in-from-bottom-0"
           onClick={(e) => e.stopPropagation()}
