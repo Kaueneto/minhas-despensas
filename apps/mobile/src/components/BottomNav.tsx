@@ -19,7 +19,7 @@ export default function BottomNav() {
 
   return (
     <View style={styles.container}>
-      <BlurView intensity={90} tint="light" style={styles.blurWrapper}>
+      <BlurView intensity={10} tint="light" style={styles.blurWrapper}>
         <View style={styles.navBarInner}>
           {navItems.map((item) => {
             const active = isActive(item.href);
@@ -69,23 +69,29 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   blurWrapper: {
-    borderRadius: 28,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.7)',
-    backgroundColor: 'rgba(255, 255, 255, 0.4)',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.1,
-        shadowRadius: 15,
-      },
-      android: {
-        elevation: 8,
-      },
-    }),
-  },
+  borderRadius: 28,
+  overflow: 'hidden',
+
+  borderWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.6)',
+    borderLeftColor: 'rgba(255,255,255,0.3)',
+    borderRightColor: 'rgba(255,255,255,0.3)',
+    borderBottomColor: 'rgba(255,255,255,0.2)',
+
+  backgroundColor: 'rgba(255,255,255,0.15)',
+
+  ...Platform.select({
+    ios: {
+      shadowColor: '#fff',       // luz da borda
+      shadowOffset: { width: 0, height: -1 },
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+    },
+    android: {
+      elevation: 10,
+    },
+  }),
+},
   navBarInner: {
     flexDirection: 'row',
     height: 65,

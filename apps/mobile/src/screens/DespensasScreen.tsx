@@ -159,6 +159,7 @@ export default function DespensasScreen() {
   // filtrar as despensas do usuario
   const filteredDespensas = despensas.filter(d => {
     if (filter === 'vazias') return d.total_itens === 0
+    if (filter === 'naoVazias') return d.total_itens > 0
     return true
   })
 
@@ -339,6 +340,21 @@ export default function DespensasScreen() {
             Vazias
           </Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.filterButton,
+            filter === 'naoVazias' && styles.filterButtonActive
+          ]}
+          onPress={() => setFilter('naoVazias')}
+        >
+          <Text style={[
+            styles.filterButtonText,
+            filter === 'naoVazias' && styles.filterButtonTextActive
+          ]}>
+            Não vazias
+          </Text>
+        </TouchableOpacity>
+
       </View>
 
       {/* Conteúdo */}
