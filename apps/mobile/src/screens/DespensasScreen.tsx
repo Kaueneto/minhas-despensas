@@ -249,7 +249,7 @@ export default function DespensasScreen() {
             style={styles.trashButton}
             onPress={() => setIsSelectionMode(true)}
           >
-      <Ionicons name="trash-outline" size={20} color="#4B5563" />
+         <Ionicons name="trash-outline" size={20} color="#4B5563" />
           </TouchableOpacity>
 
           {/* Avatar */}

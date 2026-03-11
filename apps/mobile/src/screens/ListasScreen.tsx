@@ -19,7 +19,7 @@ import { getListas, createLista, deleteLista } from '../services/listas'
 import { signOut } from '../services/auth'
 import type { ListaCompras } from '../types'
 import BottomNav from '../components/BottomNav'
-
+import { Ionicons } from '@expo/vector-icons';
 export default function ListasScreen({ navigation }: any) {
   const [listas, setListas] = useState<ListaCompras[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -227,13 +227,13 @@ export default function ListasScreen({ navigation }: any) {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Listas de Compras</Text>
         
-        <View style={styles.headerActions}>
-          {/* Menu de opções */}
+               <View style={styles.headerActions}>
+          {/* icone de lixeira que ativa o omodo de selecao */}
           <TouchableOpacity
-            style={styles.menuButton}
-            onPress={() => setShowMenu(!showMenu)}
+            style={styles.trashButton}
+            onPress={() => setIsSelectionMode(true)}
           >
-            <Text style={styles.menuDots}>⋮</Text>
+         <Ionicons name="trash-outline" size={20} color="#4B5563" />
           </TouchableOpacity>
 
           {/* Avatar */}
@@ -244,34 +244,8 @@ export default function ListasScreen({ navigation }: any) {
             <Text style={styles.avatarText}>{getInitials()}</Text>
           </TouchableOpacity>
         </View>
-
-        {/* Dropdown Menu */}
-        {showMenu && (
-          <Modal
-            transparent
-            visible={showMenu}
-            onRequestClose={() => setShowMenu(false)}
-          >
-            <TouchableOpacity
-              style={styles.menuOverlay}
-              activeOpacity={1}
-              onPress={() => setShowMenu(false)}
-            >
-              <View style={styles.menuDropdown}>
-                <TouchableOpacity
-                  style={styles.menuItem}
-                  onPress={() => {
-                    setIsSelectionMode(true)
-                    setShowMenu(false)
-                  }}
-                >
-                  <Text style={styles.menuItemText}>Selecionar listas</Text>
-                </TouchableOpacity>
-              </View>
-            </TouchableOpacity>
-          </Modal>
-        )}
       </View>
+      
 
       {/* Barra de seleção */}
       {isSelectionMode && (
@@ -302,17 +276,19 @@ export default function ListasScreen({ navigation }: any) {
               </TouchableOpacity>
             )}
             
-            {selectedListas.length > 0 && (
-              <TouchableOpacity
-                style={[styles.deleteButton, isDeleting && styles.deleteButtonDisabled]}
-                onPress={handleDeleteSelected}
-                disabled={isDeleting}
-              >
-                <Text style={styles.deleteButtonText}>
-                  {isDeleting ? '...' : '🗑'}
-                </Text>
-              </TouchableOpacity>
-            )}
+           {selectedListas.length > 0 && (
+            <TouchableOpacity
+              style={[styles.deleteButton, isDeleting && styles.deleteButtonDisabled]}
+              onPress={handleDeleteSelected}
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <ActivityIndicator size="small" color="#FFF" />
+              ) : (
+                <Ionicons name="trash-outline" size={20} color="#FFF" />
+              )}
+            </TouchableOpacity>
+          )}
           </View>
         </View>
       )}
@@ -702,6 +678,14 @@ const styles = StyleSheet.create({
     padding: 12,
     fontSize: 16,
     marginBottom: 12,
+  },
+   trashButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: '#F3F4F6',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   inputTextArea: {
     height: 80,
