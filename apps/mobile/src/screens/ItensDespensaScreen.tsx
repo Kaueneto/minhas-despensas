@@ -34,12 +34,12 @@ export default function ItensDespensaScreen() {
   const [isLoading, setIsLoading] = useState(true);
 
   const formatarData = (dataString: string) => {
-    // Se a data já está no formato DD/MM/AAAA, retorna como está
+
     if (dataString && dataString.includes('/')) {
       return dataString;
     }
     
-    // Se a data está em outro formato, tenta converter
+    // converter data se nao tiver no formato br
     try {
       const data = new Date(dataString);
       if (isNaN(data.getTime())) {

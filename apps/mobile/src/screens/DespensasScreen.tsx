@@ -20,6 +20,7 @@ import { getDespensas, createDespensa, deleteDespensa } from '../services/despen
 import { signOut } from '../services/auth'
 import type { DespensaComDetalhes } from '../types'
 import BottomNav from '../components/BottomNav'
+import { Ionicons } from '@expo/vector-icons';
 
 type FilterType = 'todas' | 'vazias'
 
@@ -34,7 +35,6 @@ export default function DespensasScreen() {
   const [isSelectionMode, setIsSelectionMode] = useState(false)
   const [selectedDespensas, setSelectedDespensas] = useState<string[]>([])
   const [isDeleting, setIsDeleting] = useState(false)
-  const [showMenu, setShowMenu] = useState(false)
 
   // verificar autenticação e buscar dados
   useEffect(() => {
@@ -204,19 +204,6 @@ export default function DespensasScreen() {
         }}
         activeOpacity={0.7}
       >
-        {isSelectionMode && (
-          <View style={styles.checkbox}>
-            <View style={[
-              styles.checkboxInner,
-              isSelected && styles.checkboxSelected
-            ]}>
-              {isSelected && (
-                <Text style={styles.checkmark}>✓</Text>
-              )}
-            </View>
-          </View>
-        )}
-        
         <View style={styles.despensaContent}>
           <Text style={styles.despensaNome}>{item.nome}</Text>
           
@@ -257,12 +244,12 @@ export default function DespensasScreen() {
         <Text style={styles.headerTitle}>Despensas</Text>
         
         <View style={styles.headerActions}>
-          {/* Menu de opções */}
+          {/* icone de lixeira que ativa o omodo de selecao */}
           <TouchableOpacity
-            style={styles.menuButton}
-            onPress={() => setShowMenu(!showMenu)}
+            style={styles.trashButton}
+            onPress={() => setIsSelectionMode(true)}
           >
-            <Text style={styles.menuDots}>⋮</Text>
+      <Ionicons name="trash-outline" size={20} color="#4B5563" />
           </TouchableOpacity>
 
           {/* Avatar */}
@@ -273,33 +260,6 @@ export default function DespensasScreen() {
             <Text style={styles.avatarText}>{getInitials()}</Text>
           </TouchableOpacity>
         </View>
-
-        {/* Dropdown Menu */}
-        {showMenu && (
-          <Modal
-            transparent
-            visible={showMenu}
-            onRequestClose={() => setShowMenu(false)}
-          >
-            <TouchableOpacity
-              style={styles.menuOverlay}
-              activeOpacity={1}
-              onPress={() => setShowMenu(false)}
-            >
-              <View style={styles.menuDropdown}>
-                <TouchableOpacity
-                  style={styles.menuItem}
-                  onPress={() => {
-                    setIsSelectionMode(true)
-                    setShowMenu(false)
-                  }}
-                >
-                  <Text style={styles.menuItemText}>Excluir Despensas</Text>
-                </TouchableOpacity>
-              </View>
-            </TouchableOpacity>
-          </Modal>
-        )}
       </View>
 
       {/* Barra de seleção */}
@@ -314,7 +274,7 @@ export default function DespensasScreen() {
             </TouchableOpacity>
             <Text style={styles.selectionText}>
               {selectedDespensas.length > 0 
-                ? `${selectedDespensas.length} item${selectedDespensas.length > 1 ? 's' : ''}`
+                ? `${selectedDespensas.length} ${selectedDespensas.length > 1 ? 'itens' : 'item'}`
                 : 'Selecione'}
             </Text>
           </View>
@@ -322,26 +282,28 @@ export default function DespensasScreen() {
           <View style={styles.selectionRight}>
             {filteredDespensas.length > 0 && (
               <TouchableOpacity
-                style={styles.selectionButton}
+                style={styles.selectAllButton}
                 onPress={handleSelectAll}
               >
-                <Text style={styles.selectionButtonText}>
-                  {selectedDespensas.length === filteredDespensas.length ? '☒' : '☐'}
+                <Text style={styles.selectAllText}>
+                  {selectedDespensas.length === filteredDespensas.length ? 'Desmarcar todas' : 'Selecionar todas'}
                 </Text>
               </TouchableOpacity>
             )}
             
-            {selectedDespensas.length > 0 && (
-              <TouchableOpacity
-                style={[styles.deleteButton, isDeleting && styles.deleteButtonDisabled]}
-                onPress={handleDeleteSelected}
-                disabled={isDeleting}
-              >
-                <Text style={styles.deleteButtonText}>
-                  {isDeleting ? '...' : '🗑'}
-                </Text>
-              </TouchableOpacity>
+        {selectedDespensas.length > 0 && (
+          <TouchableOpacity
+            style={[styles.deleteButton, isDeleting && styles.deleteButtonDisabled]}
+            onPress={handleDeleteSelected}
+            disabled={isDeleting}
+          >
+            {isDeleting ? (
+              <ActivityIndicator size="small" color="#FFF" />
+            ) : (
+              <Ionicons name="trash-outline" size={20} color="#FFF" />
             )}
+          </TouchableOpacity>
+        )}
           </View>
         </View>
       )}
@@ -500,7 +462,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
-  menuButton: {
+  trashButton: {
     width: 40,
     height: 40,
     borderRadius: 8,
@@ -508,9 +470,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  menuDots: {
-    fontSize: 20,
-    color: '#4B5563',
+  trashIcon: {
+    fontSize: 18,
   },
   avatar: {
     width: 40,
@@ -524,32 +485,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: '600',
-  },
-  menuOverlay: {
-    flex: 1,
-    backgroundColor: 'transparent',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-end',
-    paddingTop: 60,
-    paddingRight: 16,
-  },
-  menuDropdown: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
-    minWidth: 180,
-  },
-  menuItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-  },
-  menuItemText: {
-    fontSize: 14,
-    color: '#374151',
   },
   selectionBar: {
     backgroundColor: '#3B82F6',
@@ -598,6 +533,17 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     color: '#fff',
     fontSize: 16,
+  },
+  selectAllButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  selectAllText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '500',
   },
   filters: {
     flexDirection: 'row',
@@ -660,28 +606,6 @@ const styles = StyleSheet.create({
     borderColor: '#3B82F6',
     borderWidth: 2,
     backgroundColor: '#EFF6FF',
-  },
-  checkbox: {
-    marginRight: 12,
-    marginTop: 2,
-  },
-  checkboxInner: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#D1D5DB',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkboxSelected: {
-    backgroundColor: '#3B82F6',
-    borderColor: '#3B82F6',
-  },
-  checkmark: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   despensaContent: {
     flex: 1,
