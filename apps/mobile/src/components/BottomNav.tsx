@@ -1,42 +1,14 @@
 ﻿import React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Image, Platform } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Platform } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
-
-// Importar ícones
-const despensaIcon = require('../../assets/despensas.png');
-const despensaActiveIcon = require('../../assets/despensas-selected.png');
-const avisosIcon = require('../../assets/avisos.png');
-const avisosActiveIcon = require('../../assets/avisos.png');
-const listasIcon = require('../../assets/listas.png');
-const listasActiveIcon = require('../../assets/listas-selected.png');
-const gastosIcon = require('../../assets/gastos.png');
-const gastosActiveIcon = require('../../assets/gastos-selected.png');
+import { BlurView } from 'expo-blur';
+import { Package, Bell, ClipboardList, DollarSign } from 'lucide-react-native';
 
 const navItems = [
-  { 
-    name: 'Despensas', 
-    href: '/despensas',
-    icon: despensaIcon,
-    iconActive: despensaActiveIcon,
-  },
-  { 
-    name: 'Avisos', 
-    href: '/avisos',
-    icon: avisosIcon,
-    iconActive: avisosActiveIcon,
-  },
-  { 
-    name: 'Listas', 
-    href: '/listas',
-    icon: listasIcon,
-    iconActive: listasActiveIcon,
-  },
-  { 
-    name: 'Gastos', 
-    href: '/gastos',
-    icon: gastosIcon,
-    iconActive: gastosActiveIcon,
-  },
+  { name: 'Despensas', href: '/despensas', IconComponent: Package },
+  { name: 'Avisos', href: '/avisos', IconComponent: Bell },
+  { name: 'Listas', href: '/listas', IconComponent: ClipboardList },
+  { name: 'Gastos', href: '/gastos', IconComponent: DollarSign },
 ];
 
 export default function BottomNav() {
@@ -47,26 +19,27 @@ export default function BottomNav() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.navBar}>
+      <BlurView intensity={90} tint="light" style={styles.blurWrapper}>
         <View style={styles.navBarInner}>
           {navItems.map((item) => {
             const active = isActive(item.href);
+            const Icon = item.IconComponent;
             
             return (
               <TouchableOpacity
                 key={item.name}
                 style={styles.navItem}
                 onPress={() => router.push(item.href as any)}
-                activeOpacity={0.7}
+                activeOpacity={0.6}
               >
                 <View style={[
                   styles.iconContainer,
                   active && styles.iconContainerActive
                 ]}>
-                  <Image
-                    source={active ? item.iconActive : item.icon}
-                    style={styles.iconImage}
-                    resizeMode="contain"
+                  <Icon 
+                    size={22} 
+                    color={active ? '#3B82F6' : '#6B7280'} 
+                    strokeWidth={2} // FIXO: Não altera a espessura
                   />
                 </View>
                 
@@ -76,15 +49,11 @@ export default function BottomNav() {
                 ]}>
                   {item.name}
                 </Text>
-                
-                {active && (
-                  <View style={styles.activeIndicator} />
-                )}
               </TouchableOpacity>
             );
           })}
         </View>
-      </View>
+      </BlurView>
     </View>
   );
 }
@@ -96,70 +65,57 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     paddingHorizontal: 24,
-    paddingBottom: 32,
-    paddingTop: 16,
+    paddingBottom: Platform.OS === 'ios' ? 34 : 20,
+    backgroundColor: 'transparent',
   },
-  navBar: {
-    borderRadius: 32,
+  blurWrapper: {
+    borderRadius: 28,
     overflow: 'hidden',
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.8)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.15,
-    shadowRadius: 24,
-    elevation: 20,
-    // Efeito glassmorphism sem BlurView
-    backdropFilter: 'blur(20px)',
+    borderColor: 'rgba(255, 255, 255, 0.7)',
+    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.1,
+        shadowRadius: 15,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
   },
   navBarInner: {
     flexDirection: 'row',
-    paddingVertical: 10,
-    paddingHorizontal: 4,
+    height: 65,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    paddingHorizontal: 10,
   },
   navItem: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 3,
-    position: 'relative',
+    flex: 1,
   },
   iconContainer: {
-    width: 42,
-    height: 42,
+    width: 32,
+    height: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 3,
+    marginBottom: 2,
   },
   iconContainerActive: {
-    transform: [{ scale: 1.1 }],
-  },
-  iconImage: {
-    width: 24,
-    height: 24,
+  
+    transform: [{ scale: 1.15 }],
   },
   label: {
-    fontSize: 9,
-    color: '#1F2937',
-    fontWeight: '700',
-    letterSpacing: -0.2,
+    fontSize: 11,
+    color: '#6B7280',
+    fontWeight: '500', 
   },
   labelActive: {
     color: '#3B82F6',
-    fontWeight: '800',
-  },
-  activeIndicator: {
-    position: 'absolute',
-    bottom: -4,
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: '#3B82F6',
-    shadowColor: '#3B82F6',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 8,
-    elevation: 5,
+    fontWeight: '500',
   },
 });

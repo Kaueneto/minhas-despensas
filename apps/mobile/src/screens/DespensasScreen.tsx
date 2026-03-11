@@ -14,6 +14,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native'
+import { useRouter } from 'expo-router'
 import { supabase } from '../services/supabase'
 import { getDespensas, createDespensa, deleteDespensa } from '../services/despensas'
 import { signOut } from '../services/auth'
@@ -22,7 +23,8 @@ import BottomNav from '../components/BottomNav'
 
 type FilterType = 'todas' | 'vazias'
 
-export default function DespensasScreen({ navigation }: any) {
+export default function DespensasScreen() {
+  const router = useRouter()
   const [filter, setFilter] = useState<FilterType>('todas')
   const [despensas, setDespensas] = useState<DespensaComDetalhes[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -43,7 +45,7 @@ export default function DespensasScreen({ navigation }: any) {
     const { data: { session } } = await supabase.auth.getSession()
     
     if (!session) {
-      navigation.replace('/login')
+      router.replace('/login')
       return
     }
 
@@ -80,7 +82,7 @@ export default function DespensasScreen({ navigation }: any) {
           style: 'destructive',
           onPress: async () => {
             await signOut()
-            navigation.replace('/login')
+            router.replace('/login')
           }
         }
       ]
@@ -188,10 +190,16 @@ export default function DespensasScreen({ navigation }: any) {
         ]}
         onPress={() => {
           if (isSelectionMode) {
-            toggleSelectDespensa(item.id)
+            toggleSelectDespensa(item.id);
           } else {
-            // Navegar para detalhes da despensa
-            // navigation.navigate('DespensaDetalhes', { id: item.id })
+            // Navegar para a tela de itens passando os parâmetros necessários
+            router.push({
+              pathname: '/despensa/[id]',
+              params: { 
+                id: item.id, 
+                nome: item.nome 
+              }
+            });
           }
         }}
         activeOpacity={0.7}

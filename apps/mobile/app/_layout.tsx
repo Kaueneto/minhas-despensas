@@ -16,6 +16,9 @@ export default function RootLayout() {
       <Stack.Screen name="avisos" />
       <Stack.Screen name="listas" />
       <Stack.Screen name="gastos" />
+      <Stack.Screen name="despensa/[id]" />
+      <Stack.Screen name="adicionar-item" />
+      <Stack.Screen name="scanner" />
     </Stack>
   );
 }
